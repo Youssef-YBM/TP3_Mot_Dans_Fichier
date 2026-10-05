@@ -1,0 +1,4 @@
+Bonjour tout le monde.
+Ceci est un fichier de test pour la recherche de mots.
+Le C++ est un langage puissant.
+Compteur, compter, compte sont des mots proches.
