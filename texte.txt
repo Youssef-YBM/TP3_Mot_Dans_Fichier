@@ -1,4 +1,130 @@
-Bonjour tout le monde.
-Ceci est un fichier de test pour la recherche de mots.
-Le C++ est un langage puissant.
-Compteur, compter, compte sont des mots proches.
+Bonjour tout le monde, ceci est un fichier de test.
+Le C++ est un langage de programmation puissant et polyvalent.
+Un compteur sert a compter, un compte sert a compter aussi.
+La cote d'un eleve peut etre une note ou une cotation boursiere.
+Le code source d'un programme doit etre clair et bien commente.
+Un algorithme de recherche est essentiel en informatique.
+La recherche dans un fichier texte est une operation courante.
+Une chaine de caracteres est une sequence de caracteres.
+Un pointeur est une variable qui contient une adresse memoire.
+Un tableau est une structure de donnees contigue en memoire.
+Une boucle permet de repeter des instructions plusieurs fois.
+Une fonction est un bloc de code reutilisable.
+Une variable stocke une valeur en memoire.
+Une constante ne change jamais de valeur durant l'execution.
+Une classe est un modele pour creer des objets.
+Un objet est une instance d'une classe.
+Une methode est une fonction membre d'une classe.
+L'universite accueille des etudiants et des professeurs.
+Un etudiant suit des cours et passe des examens.
+Un professeur enseigne une matiere et evalue les etudiants.
+L'ordinateur est une machine electronique programmable.
+Le clavier et la souris sont des peripheriques d'entree.
+L'ecran est un peripherique de sortie.
+Un reseau relie plusieurs ordinateurs entre eux.
+Une donnee est une information brute.
+Une structure de donnees organise les donnees en memoire.
+Un arbre est une structure hierarchique.
+Un graphe est un ensemble de sommets et d'aretes.
+Une liste chainee est une structure dynamique.
+Le compteur de vitesse indique la vitesse d'un vehicule.
+Le compteur electrique mesure la consommation d'energie.
+Un compteur d'eau mesure la consommation d'eau.
+Le mot compteur contient le mot compte.
+Le mot compteur contient aussi le mot compt et comp.
+Le mot cote est une sous-sequence de compteur.
+Le mot code est aussi une sous-sequence de compteur.
+La programmation orientee objet est un paradigme majeur.
+La programmation procedurale est un autre paradigme.
+Le langage C est la base du langage C++.
+Le langage Python est tres populaire pour la data science.
+Le langage Java est utilise dans les entreprises.
+Le langage JavaScript domine le web.
+Le langage Rust est connu pour sa securite memoire.
+Un compilateur traduit le code source en code machine.
+Un interpreteur execute le code ligne par ligne.
+Un debogueur aide a trouver les erreurs dans un programme.
+Un test unitaire verifie une petite partie du code.
+Une validation confirme que le programme fonctionne correctement.
+Le resultat d'un programme doit etre verifiable.
+La performance d'un algorithme se mesure en complexite.
+La complexite temporelle s'exprime en notation grand O.
+La complexite spatiale mesure la memoire utilisee.
+Un algorithme efficace est preferable a un algorithme naif.
+La recherche lineaire parcourt tous les elements un par un.
+La recherche binaire divise l'espace de recherche par deux.
+Le tri par insertion est simple mais lent sur de grandes donnees.
+Le tri rapide est l'un des plus efficaces en pratique.
+Le tri fusion garantit une complexite en n log n.
+Une pile est une structure LIFO.
+Une file est une structure FIFO.
+Un dictionnaire associe des cles a des valeurs.
+Un ensemble ne contient pas de doublons.
+Une matrice est un tableau a deux dimensions.
+Un vecteur est un tableau dynamique.
+Une deque est une file a double extremite.
+Un iterateur parcourt les elements d'un conteneur.
+Une reference est un alias vers une variable existante.
+Une copie duplique la valeur d'une variable.
+Le passage par valeur copie l'argument.
+Le passage par reference ne copie pas l'argument.
+Un constructeur initialise un objet a sa creation.
+Un destructeur libere les ressources d'un objet.
+L'heritage permet de reutiliser du code.
+Le polymorphisme permet de traiter des objets differents uniformement.
+L'encapsulation protege les donnees internes.
+L'abstraction cache les details d'implementation.
+Une interface definit un contrat que les classes doivent respecter.
+Une classe abstraite ne peut pas etre instanciee.
+Une fonction virtuelle permet la liaison dynamique.
+Une fonction virtuelle pure rend une classe abstraite.
+Le pointeur this designe l'objet courant.
+Le mot cle const rend une variable immuable.
+Le mot cle static change la portee d'une variable.
+Le mot cle virtual active le polymorphisme dynamique.
+Le mot cle override verifie la signature d'une methode.
+Le mot cle final empeche l'heritage ou la redefinition.
+Les templates permettent la programmation generique.
+La STL est la bibliotheque standard de C++.
+La STL contient des conteneurs, des algorithmes et des iterateurs.
+Le conteneur vector est le plus utilise en pratique.
+Le conteneur map associe des cles uniques a des valeurs.
+Le conteneur set stocke des elements uniques tries.
+Le conteneur unordered_map utilise une table de hachage.
+Le conteneur list est une liste doublement chainee.
+L'algorithme sort trie une plage d'elements.
+L'algorithme find cherche une valeur dans une plage.
+L'algorithme count compte les occurrences d'une valeur.
+L'algorithme transform modifie chaque element d'une plage.
+L'algorithme accumulate calcule une somme.
+L'algorithme for_each applique une fonction a chaque element.
+La lambda expression est une fonction anonyme.
+La capture par reference permet de modifier l'exterieur.
+La capture par valeur copie les variables capturees.
+Un smart pointer gere automatiquement la memoire.
+unique_ptr est un pointeur intelligent exclusif.
+shared_ptr est un pointeur intelligent partage.
+weak_ptr est un pointeur intelligent faible.
+La fuite memoire est un bug classique en C.
+Le ramasse-miettes n'existe pas en C++.
+La gestion manuelle de la memoire est une responsabilite.
+Le new alloue de la memoire sur le tas.
+Le delete libere la memoire allouee par new.
+Le new[] alloue un tableau sur le tas.
+Le delete[] libere un tableau alloue par new[].
+Une exception signale une erreur a l'execution.
+Le bloc try entoure le code susceptible de lever une exception.
+Le bloc catch capture et traite l'exception.
+Le mot cle throw leve une exception.
+La bibliotheque standard definit des exceptions standard.
+La classe std::exception est la base des exceptions.
+La classe std::runtime_error signale une erreur a l'execution.
+La classe std::logic_error signale une erreur de logique.
+Le fichier texte que vous lisez contient des milliers de mots.
+Le mot compteur apparait plusieurs fois dans ce fichier.
+Le mot cote est bien present dans le mot compteur.
+Le mot algorithme est essentiel en informatique.
+La recherche de mots dans un fichier est un exercice classique.
+Ce fichier sert a tester vos programmes de recherche.
+Bonne chance pour votre TP de C++ avance.
+Fin du fichier de test.
