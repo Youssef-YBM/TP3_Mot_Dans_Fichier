@@ -1,147 +1,92 @@
-\documentclass[12pt,a4paper]{article}
+\documentclass[11pt,a4paper]{article}
 
 % ---------- Packages ----------
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[french]{babel}
 \usepackage{lmodern}
-\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage[a4paper,margin=2.3cm]{geometry}
 \usepackage{microtype}
-\usepackage{setspace}
-\usepackage{graphicx}
 \usepackage{booktabs}
-\usepackage{array}
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{pgfplots}
+\usepackage{titlesec}
 \usepackage{fancyhdr}
 \usepackage{amsmath}
 \usepackage{hyperref}
-\hypersetup{colorlinks=true,urlcolor=blue!60!black,linkcolor=black}
 \pgfplotsset{compat=1.16}
 
-\setstretch{1.15}
+% ---------- Couleurs ----------
+\definecolor{bleu}{RGB}{26,82,160}
+\definecolor{bleuclair}{RGB}{232,240,252}
+\definecolor{vert}{RGB}{30,120,70}
+\hypersetup{colorlinks=true,urlcolor=bleu,linkcolor=bleu}
 
-% ---------- Style du code ----------
-\definecolor{cmt}{RGB}{0,128,0}
-\definecolor{kw}{RGB}{0,0,190}
-\definecolor{bg}{RGB}{248,248,248}
+% ---------- Titres en bleu ----------
+\titleformat{\section}{\Large\bfseries\color{bleu}}{\thesection.}{0.5em}{}[\color{bleu}\titlerule]
+\titleformat{\subsection}{\large\bfseries\color{bleu}}{\thesubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{1.4em}{0.6em}
+
+% ---------- Code ----------
 \lstset{
-  language=C++, basicstyle=\ttfamily\small, keywordstyle=\color{kw}\bfseries,
-  commentstyle=\color{cmt}\itshape, stringstyle=\color{red!60!black},
-  backgroundcolor=\color{bg}, frame=single, rulecolor=\color{black!25},
-  numbers=left, numberstyle=\tiny\color{gray}, breaklines=true,
-  showstringspaces=false, tabsize=4, captionpos=b, xleftmargin=1.5em,
+  language=C++, basicstyle=\ttfamily\small, keywordstyle=\color{bleu}\bfseries,
+  commentstyle=\color{vert}\itshape, stringstyle=\color{red!60!black},
+  backgroundcolor=\color{bleuclair}, frame=l, rulecolor=\color{bleu},
+  breaklines=true, showstringspaces=false, tabsize=4, captionpos=b,
   literate={é}{{\'e}}1 {è}{{\`e}}1 {à}{{\`a}}1
 }
 
 % ---------- En-tête / pied de page ----------
 \pagestyle{fancy}
 \fancyhf{}
-\lhead{TP3 -- Recherche d'un mot dans un fichier}
-\rhead{ILISI 2 -- 2026}
+\lhead{\color{bleu}\textbf{Youssef Errami}}
+\chead{\color{bleu}TP3 : recherche d'un mot dans un fichier}
+\rhead{\color{bleu}ILISI 2}
 \cfoot{\thepage}
-\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\headrule}{\color{bleu}\hrule width\headwidth height 0.5pt}
 
 \begin{document}
 
-% ====================== PAGE DE GARDE ======================
-\begin{titlepage}
-  \centering
-  \vspace*{1cm}
-  {\large \textsc{Cycle d'ingénieur -- ILISI 2}\par}
-  \vspace{0.3cm}
-  {\large Année universitaire 2025--2026\par}
-  \vspace{2cm}
-  \rule{\linewidth}{1.2pt}\\[0.5cm]
-  {\Huge \bfseries Travaux Pratiques n°3\par}
-  \vspace{0.4cm}
-  {\LARGE Recherche d'un mot dans un fichier texte\par}
-  \vspace{0.3cm}
-  {\Large Implémentation en C++ et \emph{benchmarking}\\ avec \texttt{<chrono>} et la STL\par}
-  \rule{\linewidth}{1.2pt}\\[2cm]
-  {\large Module : \textbf{C++ Avancé et Virtualisation}\par}
-  \vspace{2cm}
-  {\large Réalisé par :\par}
-  {\Large \textbf{YOUSSEF ERRAMI}\par}
-  \vspace{1cm}
-  {\large Dépôt GitHub :\\ \href{https://github.com/Youssef-YBM/TP3_Mot_Dans_Fichier}{\texttt{github.com/Youssef-YBM/TP3\_Mot\_Dans\_Fichier}}\par}
-  \vfill
-  {\large \today\par}
-\end{titlepage}
+\noindent
+{\LARGE\bfseries\color{bleu} Recherche d'un mot dans un fichier texte}\\[0.3em]
+{\large Benchmark en C++ avec \texttt{<chrono>} et la STL}\\[0.6em]
+\textbf{Youssef Errami} \quad|\quad ILISI 2, C++ Avancé et Virtualisation \quad|\quad \today\\
+Code source : \href{https://github.com/Youssef-YBM/TP3_Mot_Dans_Fichier}{\texttt{github.com/Youssef-YBM/TP3\_Mot\_Dans\_Fichier}}
+\par\medskip
+{\color{bleu}\hrule height 1pt}
 
-\tableofcontents
-\newpage
-
-% ====================== 1. INTRODUCTION ======================
+% ====================== 1 ======================
 \section{Introduction}
 
-La recherche d'une sous-chaîne dans un texte est une opération fondamentale
-en informatique : éditeurs, moteurs de recherche, outils comme \texttt{grep}.
-Ce TP consiste à écrire un programme C++ qui lit un fichier \texttt{.txt}, demande
-un mot à l'utilisateur et indique s'il existe dans le fichier, sans tenir compte de la casse.
+Dans ce TP, j'ai écrit un programme qui lit un fichier \texttt{.txt}, demande un mot
+à l'utilisateur et dit s'il y figure, sans tenir compte des majuscules.
+Je l'ai fait de deux façons pour pouvoir comparer :
+\begin{itemize}
+  \item la version \textbf{STL}, qui s'appuie sur \texttt{std::string} et \texttt{find} ;
+  \item la version \textbf{from scratch}, où j'ai écrit moi-même la boucle de recherche.
+\end{itemize}
+Le but est de mesurer ce que chacune coûte vraiment : j'ai chronométré
+le programme avec \texttt{<chrono>}, rangé les mesures dans un \texttt{std::vector}
+et utilisé \texttt{std::sort} et \texttt{std::accumulate} pour les statistiques.
 
-Deux implémentations de même logique sont comparées :
-\begin{enumerate}
-  \item une version \textbf{STL} reposant sur \texttt{std::string} et \texttt{std::string::find} ;
-  \item une version \textbf{\emph{from scratch}}, où l'algorithme de recherche naïf est écrit à la main.
-\end{enumerate}
-Les temps d'exécution sont mesurés avec la bibliothèque \texttt{<chrono>} et exploités
-statistiquement à l'aide de \texttt{std::vector}, \texttt{std::sort} et \texttt{std::accumulate}.
+Les fichiers du projet :
+\texttt{recherche\_fichier\_string.cpp} (version STL),
+\texttt{recherche\_fichier\_scratch.cpp} (version from scratch),
+\texttt{benchmark.cpp} (comparaison des deux, sortie CSV) et
+\texttt{texte.txt} (fichier de test, 130 lignes, 6\,711 octets).
+Tout a été compilé avec g++ 16.2 (MinGW-w64) sous Windows 11, en C++17 avec \texttt{-O2}.
 
-\paragraph{Objectifs.}
-(i) Implémenter les deux versions ; (ii) mesurer leurs temps de lecture et de recherche ;
-(iii) comparer leur comportement selon la taille du fichier et la position du mot ;
-(iv) interpréter les écarts observés.
-
-% ====================== 2. ENVIRONNEMENT ======================
-\section{Environnement et organisation du projet}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{ll}
-\toprule
-\textbf{Élément} & \textbf{Valeur} \\
-\midrule
-Système & Windows 11 Pro \\
-Compilateur & g++ 16.2.0 (MinGW-w64, UCRT) \\
-Standard & C++17 \\
-Options & \texttt{-O2 -Wall -Wextra -static} \\
-Horloge & \texttt{std::chrono::steady\_clock} \\
-\bottomrule
-\end{tabular}
-\caption{Configuration de test.}
-\end{table}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{p{5.6cm}p{8.4cm}}
-\toprule
-\textbf{Fichier} & \textbf{Rôle} \\
-\midrule
-\texttt{recherche\_fichier\_string.cpp} & Version STL (\texttt{std::string::find}) \\
-\texttt{recherche\_fichier\_scratch.cpp} & Version \emph{from scratch} (algorithme naïf) \\
-\texttt{benchmark.cpp} & Benchmark comparatif des deux versions (sortie CSV) \\
-\texttt{texte.txt} & Fichier de test (130 lignes, 6\,711 octets) \\
-\texttt{resultats\_benchmark.csv} & Résultats bruts des mesures \\
-\bottomrule
-\end{tabular}
-\caption{Organisation du projet.}
-\end{table}
-
-Chaque programme est structuré en sections : utilitaires, lecture, recherche,
-affichage, benchmark, puis \texttt{main}. La logique d'origine n'a pas été modifiée.
-
-% ====================== 3. CONCEPTION ======================
-\section{Conception}
+% ====================== 2 ======================
+\section{Les deux versions}
 
 \subsection{Version STL}
-Le fichier est lu en une seule opération par \texttt{rdbuf()} dans un
-\texttt{std::stringstream}. Le texte et le mot sont ensuite convertis en minuscules
-avec \texttt{std::transform}, puis \texttt{std::string::find} renvoie la position de la
-première occurrence ou \texttt{std::string::npos}.
+Le fichier est lu d'un coup via \texttt{rdbuf()} dans un \texttt{stringstream}.
+Le texte et le mot sont mis en minuscules avec \texttt{std::transform}, puis
+\texttt{find} renvoie la position de la première occurrence.
 
-\begin{lstlisting}[caption={Recherche de la version STL.}]
+\begin{lstlisting}[caption={Recherche avec la STL.}]
 size_t rechercher(const std::string& contenu, const std::string& mot) {
     std::string contenuLower = toLower(contenu);
     std::string motLower     = toLower(mot);
@@ -149,12 +94,12 @@ size_t rechercher(const std::string& contenu, const std::string& mot) {
 }
 \end{lstlisting}
 
-\subsection{Version \emph{from scratch}}
-Le fichier est lu caractère par caractère avec \texttt{get()}. La recherche teste
-chaque position $i$ du texte et compare le motif caractère par caractère, en comparant
-\texttt{tolower} des deux côtés : aucune copie du texte n'est nécessaire.
+\subsection{Version from scratch}
+Ici le fichier est lu caractère par caractère avec \texttt{get()}. La recherche essaie
+chaque position du texte et compare le motif lettre par lettre, en passant les deux
+caractères en minuscules au moment de la comparaison. Il n'y a donc aucune copie du texte.
 
-\begin{lstlisting}[caption={Recherche de la version \emph{from scratch}.}]
+\begin{lstlisting}[caption={Recherche écrite à la main.}]
 int rechercher(const std::string& texte, const std::string& motif) {
     if (motif.empty() || motif.size() > texte.size()) return -1;
     int n = (int)texte.size(), m = (int)motif.size();
@@ -163,39 +108,25 @@ int rechercher(const std::string& texte, const std::string& motif) {
         while (j < m && std::tolower((unsigned char)texte[i + j]) ==
                         std::tolower((unsigned char)motif[j]))
             ++j;
-        if (j == m) return i;   // motif trouvé en i
+        if (j == m) return i;   // trouvé en i
     }
     return -1;
 }
 \end{lstlisting}
 
-\subsection{Complexité théorique}
-Soit $n$ la taille du texte et $m$ celle du motif.
+\subsection{Ce qu'on peut prévoir}
+Avec $n$ la taille du texte et $m$ celle du mot : la version STL parcourt toujours tout
+le texte pour le copier en minuscules, donc elle coûte $\Theta(n)$ même si le mot est au
+tout début. La version naïve peut s'arrêter dès qu'elle trouve le mot ($O(m)$ au mieux),
+mais elle coûte $O(n\cdot m)$ au pire.
 
-\begin{table}[h]
-\centering
-\begin{tabular}{lcc}
-\toprule
- & \textbf{Pire cas} & \textbf{Cas favorable} \\
-\midrule
-Version STL (copie + \texttt{find}) & $\Theta(n)$ systématique (copie) & $\Theta(n)$ \\
-Version \emph{from scratch} & $O(n\cdot m)$ & $O(m)$ (mot au début) \\
-\bottomrule
-\end{tabular}
-\caption{Complexités des deux approches.}
-\end{table}
+% ====================== 3 ======================
+\section{Comment j'ai mesuré}
 
-La version STL paie toujours le coût de la mise en minuscules de tout le texte, même
-si le mot se trouve au début. La version naïve peut s'arrêter dès la première occurrence.
+Une petite fonction template chronomètre n'importe quel appel avec \texttt{steady\_clock},
+qui est monotone et donc insensible aux changements d'heure du système.
 
-% ====================== 4. MÉTHODOLOGIE ======================
-\section{Méthodologie de mesure}
-
-\subsection{Chronométrage avec \texttt{<chrono>}}
-Un modèle de fonction mesure la durée d'un appelable en microsecondes avec une horloge
-monotone (\texttt{steady\_clock}), non affectée par les changements d'heure système.
-
-\begin{lstlisting}[caption={Fonction de chronométrage.}]
+\begin{lstlisting}[caption={Chronométrage d'un appel, en microsecondes.}]
 template <typename Fonction>
 double mesurerUs(Fonction f) {
     auto debut = Horloge::now();
@@ -205,11 +136,11 @@ double mesurerUs(Fonction f) {
 }
 \end{lstlisting}
 
-\subsection{Statistiques avec la STL}
-Chaque mesure est répétée $N$ fois et les durées sont rangées dans un
-\texttt{std::vector<double>}. Après \texttt{std::sort}, on obtient le minimum, le
-maximum et la médiane ; \texttt{std::accumulate} donne la moyenne et l'écart-type.
-La variable \texttt{volatile} évite que l'optimiseur supprime l'appel mesuré.
+Une seule mesure n'est pas fiable : un appel de quelques microsecondes est vite perturbé
+par le système. Chaque cas est donc répété 200 fois, les durées vont dans un
+\texttt{std::vector<double>}, puis je trie et je calcule min, médiane, moyenne,
+écart-type et max. J'ai utilisé une variable \texttt{volatile} pour que le compilateur ne
+supprime pas l'appel mesuré.
 
 \begin{lstlisting}[caption={Collecte et analyse des temps.}]
 std::vector<double> temps;
@@ -220,52 +151,45 @@ double moyenne = std::accumulate(temps.begin(), temps.end(), 0.0) / temps.size()
 double mediane = temps[temps.size() / 2];
 \end{lstlisting}
 
-\subsection{Protocole expérimental}
-\begin{itemize}
-  \item \textbf{Tailles :} le fichier de base (6\,711 octets) est répliqué $\times 1$, $\times 10$,
-        $\times 100$ et $\times 1000$ (jusqu'à environ 6,7 Mo).
-  \item \textbf{Mots :} \og Bonjour \fg{} (début du texte), \og Fin du fichier de test \fg{}
-        (fin de la première copie) et \og zzzxyz \fg{} (absent : parcours complet).
-  \item \textbf{Répétitions :} 200 par couple (version, mot, taille).
-\end{itemize}
+Le protocole : le fichier de base est répliqué $\times 1$, $\times 10$, $\times 100$ puis
+$\times 1000$ (jusqu'à environ 6,7 Mo), et je cherche trois mots :
+\og Bonjour \fg{} (au début), \og Fin du fichier de test \fg{} (à la fin de la première copie)
+et \og zzzxyz \fg{} (absent, donc parcours complet).
 
-% ====================== 5. RÉSULTATS ======================
+% ====================== 4 ======================
 \section{Résultats}
 
-\subsection{Programmes individuels}
 Sur le fichier de base avec le mot \og compteur \fg, les deux programmes trouvent
-l'occurrence à la position 118. Pour la version \emph{from scratch}, la recherche est
-mesurée à environ 0,8~$\mu$s (médiane sur 1000 répétitions), la lecture complète
-(caractère par caractère) à environ 260~$\mu$s.
+la position 118. Pour la version from scratch, la recherche prend environ 0,8~$\mu$s
+(médiane de 1000 répétitions) et la lecture du fichier environ 260~$\mu$s.
 
-\subsection{Benchmark comparatif}
-Les temps médians (en $\mu$s) sont donnés par la table~\ref{tab:resultats}.
+Le tableau \ref{tab:resultats} donne les temps médians du benchmark comparatif.
 
 \begin{table}[h]
 \centering
 \small
 \begin{tabular}{rl rr}
 \toprule
-\textbf{Taille (octets)} & \textbf{Mot} & \textbf{STL} & \textbf{Scratch} \\
+\textbf{\color{bleu}Taille (octets)} & \textbf{\color{bleu}Mot} & \textbf{\color{bleu}STL ($\mu$s)} & \textbf{\color{bleu}Scratch ($\mu$s)} \\
 \midrule
-6\,711     & début  & 17,10     & 0,10 \\
-           & fin    & 17,80     & 33,10 \\
-           & absent & 17,50     & 32,50 \\
+6\,711      & début  & 17,10      & 0,10 \\
+            & fin    & 17,80      & 33,10 \\
+            & absent & 17,50      & 32,50 \\
 \midrule
-67\,110    & début  & 200,10    & 0,10 \\
-           & fin    & 198,30    & 32,20 \\
-           & absent & 194,00    & 340,60 \\
+67\,110     & début  & 200,10     & 0,10 \\
+            & fin    & 198,30     & 32,20 \\
+            & absent & 194,00     & 340,60 \\
 \midrule
-671\,100   & début  & 1\,675,00 & 0,10 \\
-           & fin    & 1\,682,10 & 31,40 \\
-           & absent & 1\,714,80 & 3\,234,60 \\
+671\,100    & début  & 1\,675,00  & 0,10 \\
+            & fin    & 1\,682,10  & 31,40 \\
+            & absent & 1\,714,80  & 3\,234,60 \\
 \midrule
 6\,711\,000 & début  & 17\,775,10 & 0,10 \\
             & fin    & 18\,448,90 & 32,30 \\
             & absent & 23\,804,70 & 49\,497,40 \\
 \bottomrule
 \end{tabular}
-\caption{Temps médians de recherche ($\mu$s), 200 répétitions.}
+\caption{Temps médians de recherche (200 répétitions par cas).}
 \label{tab:resultats}
 \end{table}
 
@@ -273,100 +197,77 @@ Les temps médians (en $\mu$s) sont donnés par la table~\ref{tab:resultats}.
 \centering
 \begin{tikzpicture}
 \begin{loglogaxis}[
-  width=0.88\linewidth, height=7.5cm,
+  width=0.9\linewidth, height=7.5cm,
   xlabel={Taille du texte (octets)}, ylabel={Temps médian ($\mu$s)},
-  grid=major, legend pos=north west, legend cell align=left,
+  grid=major, grid style={bleu!15}, legend pos=north west, legend cell align=left,
   legend style={font=\small}
 ]
-\addplot[blue, mark=*, thick] coordinates {(6711,17.5)(67110,194)(671100,1714.8)(6711000,23804.7)};
-\addlegendentry{STL -- mot absent}
-\addplot[red, mark=square*, thick] coordinates {(6711,32.5)(67110,340.6)(671100,3234.6)(6711000,49497.4)};
-\addlegendentry{Scratch -- mot absent}
-\addplot[blue, dashed, mark=o, thick] coordinates {(6711,17.1)(67110,200.1)(671100,1675)(6711000,17775.1)};
-\addlegendentry{STL -- mot au début}
-\addplot[red, dashed, mark=square, thick] coordinates {(6711,0.1)(67110,0.1)(671100,0.1)(6711000,0.1)};
-\addlegendentry{Scratch -- mot au début}
+\addplot[bleu, mark=*, very thick] coordinates {(6711,17.5)(67110,194)(671100,1714.8)(6711000,23804.7)};
+\addlegendentry{STL, mot absent}
+\addplot[red!70!black, mark=square*, very thick] coordinates {(6711,32.5)(67110,340.6)(671100,3234.6)(6711000,49497.4)};
+\addlegendentry{Scratch, mot absent}
+\addplot[bleu!60, dashed, mark=o, thick] coordinates {(6711,17.1)(67110,200.1)(671100,1675)(6711000,17775.1)};
+\addlegendentry{STL, mot au début}
+\addplot[red!50!black, dashed, mark=square, thick] coordinates {(6711,0.1)(67110,0.1)(671100,0.1)(6711000,0.1)};
+\addlegendentry{Scratch, mot au début}
 \end{loglogaxis}
 \end{tikzpicture}
-\caption{Temps de recherche en fonction de la taille du texte (échelle log-log).}
+\caption{Temps de recherche selon la taille du texte (échelle log-log).}
 \label{fig:perf}
 \end{figure}
 
-% ====================== 6. ANALYSE ======================
-\section{Analyse et discussion}
+% ====================== 5 ======================
+\section{Analyse}
 
-\paragraph{Croissance linéaire.}
-Dans le pire cas (mot absent), les deux versions suivent une droite de pente 1 en
-échelle log-log : le temps est multiplié par environ 10 quand la taille l'est aussi,
-ce qui confirme une complexité $O(n)$ pour ce type de texte.
+\paragraph{Une croissance linéaire.}
+Quand le mot est absent, les deux courbes de la figure \ref{fig:perf} sont des droites de
+pente 1 : le texte est 10 fois plus grand, le temps l'est à peu près aussi. C'est bien du $O(n)$.
 
-\paragraph{Mot en début de texte.}
-La version \emph{from scratch} s'arrête dès la première occurrence : $\approx 0{,}1~\mu$s
-quelle que soit la taille. La version STL reste proportionnelle à $n$, car elle recopie
-et convertit \emph{tout} le texte en minuscules avant de chercher. Dans ce cas, l'écart
-atteint plus de cinq ordres de grandeur sur 6,7~Mo.
+\paragraph{Mot au début : la version from scratch gagne largement.}
+Elle s'arrête à la première occurrence, soit environ 0,1~$\mu$s quelle que soit la taille.
+La version STL reste proportionnelle à $n$ parce qu'elle recopie et convertit tout le texte
+avant même de chercher. Sur 6,7~Mo, l'écart dépasse cinq ordres de grandeur.
 
-\paragraph{Mot absent.}
-La version STL est environ 1,8 à 2,1 fois plus rapide : \texttt{find} s'appuie sur des
-primitives optimisées, tandis que la version naïve appelle \texttt{tolower} deux fois à chaque
-comparaison. Le coût dominant de la version STL est la copie avec conversion, pas la recherche.
+\paragraph{Mot absent : la STL gagne.}
+Elle est environ 1,8 à 2,1 fois plus rapide, car \texttt{find} est très optimisé, alors
+que ma boucle appelle \texttt{tolower} deux fois à chaque comparaison.
+Ce que j'ai trouvé surprenant, c'est que le coût de la version STL vient surtout de la
+copie en minuscules, et non de la recherche elle-même.
 
 \paragraph{Variabilité.}
-L'écart-type devient notable sur les gros fichiers (par ex. 6\,706~$\mu$s pour la version
-STL sur 6,7~Mo, mot absent), du fait des effets de cache, des allocations mémoire et de
-l'ordonnancement du système. C'est pourquoi la médiane est retenue plutôt que la moyenne.
+Sur les gros fichiers, l'écart-type devient important (6\,706~$\mu$s pour la STL sur 6,7~Mo,
+mot absent) à cause du cache, des allocations mémoire et de l'ordonnanceur. C'est pourquoi
+je compare les médianes plutôt que les moyennes.
 
-% ====================== 7. LIMITES ======================
-\section{Limites et améliorations possibles}
+\paragraph{Limites.}
+La mise en minuscules ne gère que l'ASCII, donc pas les accents en UTF-8. Le mot \og fin \fg{}
+est trouvé dans la première copie du texte répliqué, ce qui explique ses temps constants
+en version from scratch. Enfin, les valeurs absolues dépendent de ma machine ; ce sont les
+comparaisons entre versions qui comptent.
 
-\begin{itemize}
-  \item La recherche insensible à la casse ne traite que l'ASCII ; les caractères accentués
-        UTF-8 nécessitent une bibliothèque Unicode.
-  \item Le mot \og fin \fg{} est trouvé dans la première copie du texte répliqué, d'où des
-        temps constants pour la version \emph{from scratch}.
-  \item Les mesures dépendent de la machine ; elles servent à comparer les versions
-        entre elles, pas à fournir des valeurs absolues.
-  \item \textbf{Améliorations :} éviter la copie dans la version STL en comparant avec
-        \texttt{std::search} et un prédicat insensible à la casse ; utiliser un algorithme
-        sous-linéaire (Boyer--Moore--Horspool, \texttt{std::boyer\_moore\_searcher}) ;
-        lire le fichier par blocs.
-\end{itemize}
-
-% ====================== 8. CONCLUSION ======================
+% ====================== 6 ======================
 \section{Conclusion}
 
-Ce TP a permis d'implémenter la recherche d'un mot dans un fichier de deux manières
-et de les comparer quantitativement avec \texttt{<chrono>} et les conteneurs de la STL.
-Les résultats montrent qu'aucune version n'est meilleure dans tous les cas : la version
-\emph{from scratch} est très rapide quand le mot est proche du début, mais elle est
-environ deux fois plus lente que la STL dans le pire cas ; la version STL a un coût
-constant en $O(n)$ lié à la copie du texte. Le benchmarking est donc indispensable pour
-valider un choix d'implémentation, à condition de répéter les mesures et de s'appuyer
-sur des statistiques robustes comme la médiane.
+Aucune des deux versions n'est la meilleure dans tous les cas. La version from scratch
+est imbattable quand le mot est proche du début, mais environ deux fois plus lente que la STL
+dans le pire cas. La version STL a un coût stable de $\Theta(n)$ dû à la copie du texte.
+Pour l'améliorer, on pourrait éviter la copie avec \texttt{std::search} et un prédicat
+insensible à la casse, ou utiliser un algorithme comme Boyer--Moore--Horspool.
+Ce TP m'a surtout montré qu'il faut mesurer, avec des répétitions et la médiane,
+avant de conclure qu'une implémentation est plus rapide qu'une autre.
 
-% ====================== ANNEXES ======================
-\appendix
-\section{Dépôt du code source}
+% ====================== Annexe ======================
+\section*{Annexe : compilation}
 
-L'ensemble du code source (programmes, fichier de test, résultats et ce rapport) est disponible sur GitHub :
-
-\begin{center}
-\href{https://github.com/Youssef-YBM/TP3_Mot_Dans_Fichier}{\texttt{https://github.com/Youssef-YBM/TP3\_Mot\_Dans\_Fichier}}
-\end{center}
-
-\section{Compilation et exécution}
-
-\begin{lstlisting}[language=bash,numbers=none,caption={Commandes utilisées.}]
+\begin{lstlisting}[language=bash,caption={Commandes utilisées.}]
 g++ -std=c++17 -O2 -Wall -Wextra -static recherche_fichier_string.cpp  -o recherche_fichier_string.exe
 g++ -std=c++17 -O2 -Wall -Wextra -static recherche_fichier_scratch.cpp -o recherche_fichier_scratch.exe
 g++ -std=c++17 -O2 -Wall -Wextra -static benchmark.cpp                 -o benchmark.exe
-
-recherche_fichier_string.exe  texte.txt
-recherche_fichier_scratch.exe texte.txt
 benchmark.exe texte.txt > resultats_benchmark.csv
 \end{lstlisting}
 
-L'option \texttt{-static} évite le chargement d'une \texttt{libstdc++-6.dll} incompatible
-présente dans le \texttt{PATH} (celle de Git for Windows), qui provoquait un plantage au démarrage.
+J'ai dû ajouter \texttt{-static} : sans cela, mes exécutables plantaient au lancement,
+car Windows chargeait une \texttt{libstdc++-6.dll} incompatible, celle de Git for Windows,
+présente dans le \texttt{PATH}.
 
 \end{document}
