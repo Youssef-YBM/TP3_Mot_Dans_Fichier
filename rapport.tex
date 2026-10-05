@@ -251,23 +251,7 @@ comparaisons entre versions qui comptent.
 Aucune des deux versions n'est la meilleure dans tous les cas. La version from scratch
 est imbattable quand le mot est proche du début, mais environ deux fois plus lente que la STL
 dans le pire cas. La version STL a un coût stable de $\Theta(n)$ dû à la copie du texte.
-Pour l'améliorer, on pourrait éviter la copie avec \texttt{std::search} et un prédicat
-insensible à la casse, ou utiliser un algorithme comme Boyer--Moore--Horspool.
 Ce TP m'a surtout montré qu'il faut mesurer, avec des répétitions et la médiane,
 avant de conclure qu'une implémentation est plus rapide qu'une autre.
-
-% ====================== Annexe ======================
-\section*{Annexe : compilation}
-
-\begin{lstlisting}[language=bash,caption={Commandes utilisées.}]
-g++ -std=c++17 -O2 -Wall -Wextra -static recherche_fichier_string.cpp  -o recherche_fichier_string.exe
-g++ -std=c++17 -O2 -Wall -Wextra -static recherche_fichier_scratch.cpp -o recherche_fichier_scratch.exe
-g++ -std=c++17 -O2 -Wall -Wextra -static benchmark.cpp                 -o benchmark.exe
-benchmark.exe texte.txt > resultats_benchmark.csv
-\end{lstlisting}
-
-J'ai dû ajouter \texttt{-static} : sans cela, mes exécutables plantaient au lancement,
-car Windows chargeait une \texttt{libstdc++-6.dll} incompatible, celle de Git for Windows,
-présente dans le \texttt{PATH}.
 
 \end{document}
