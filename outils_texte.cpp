@@ -2,6 +2,7 @@
 //  TP3 - Outils sur un fichier texte
 //    1) Plus longue sous-chaine du mot saisi presente dans le fichier
 //    2) Recherche puis remplacement de toutes les occurrences
+//    3) Plus longue sous-chaine commune a deux chaines
 //  Deux versions pour chaque outil : STL (find) et from scratch
 //  Temps mesures avec <chrono>, statistiques avec std::vector
 //  Recherche insensible a la casse.
@@ -183,6 +184,94 @@ void outilPlusLongue(const std::string& contenu) {
 }
 
 // ============================================================
+//  OUTIL 3 : plus longue sous-chaine COMMUNE a deux chaines
+//  (sous-chaine = suite contigue de caracteres, casse ignoree)
+// ============================================================
+
+struct ResultatCommune {
+    std::string sousChaine;
+    size_t posA = 0, posB = 0;   // position de debut dans A et dans B
+};
+
+// Version STL : programmation dynamique avec std::vector.
+// d[j] = longueur du suffixe commun de A[0..i] et B[0..j].
+// Une seule ligne de la table est gardee en memoire : O(m) espace, O(n*m) temps.
+ResultatCommune communeSTL(const std::string& a, const std::string& b) {
+    std::string A = toLower(a), B = toLower(b);
+    std::vector<int> prec(B.size() + 1, 0), cour(B.size() + 1, 0);
+    int meilleur = 0;
+    size_t finA = 0, finB = 0;
+
+    for (size_t i = 1; i <= A.size(); ++i) {
+        for (size_t j = 1; j <= B.size(); ++j) {
+            cour[j] = (A[i - 1] == B[j - 1]) ? prec[j - 1] + 1 : 0;
+            if (cour[j] > meilleur) { meilleur = cour[j]; finA = i; finB = j; }
+        }
+        std::swap(prec, cour);
+    }
+
+    ResultatCommune r;
+    r.sousChaine = a.substr(finA - meilleur, meilleur);
+    r.posA = finA - meilleur;
+    r.posB = finB - meilleur;
+    return r;
+}
+
+// Version from scratch : on essaie chaque couple de positions (i, j)
+// et on etend la correspondance caractere par caractere : O(n*m*L).
+ResultatCommune communeScratch(const std::string& a, const std::string& b) {
+    ResultatCommune r;
+    size_t meilleur = 0;
+
+    for (size_t i = 0; i < a.size(); ++i) {
+        for (size_t j = 0; j < b.size(); ++j) {
+            size_t k = 0;
+            while (i + k < a.size() && j + k < b.size() &&
+                   std::tolower((unsigned char)a[i + k]) ==
+                   std::tolower((unsigned char)b[j + k])) {
+                ++k;
+            }
+            if (k > meilleur) { meilleur = k; r.posA = i; r.posB = j; }
+        }
+    }
+    r.sousChaine = a.substr(r.posA, meilleur);
+    return r;
+}
+
+void outilCommune() {
+    std::string a, b;
+    std::cout << "Premiere chaine  : ";
+    std::getline(std::cin, a);
+    std::cout << "Deuxieme chaine  : ";
+    std::getline(std::cin, b);
+    if (a.empty() || b.empty()) { std::cerr << "Chaine vide.\n"; return; }
+
+    ResultatCommune rSTL, rScratch;
+    double tSTL     = mesurerUs([&] { rSTL     = communeSTL(a, b); });
+    double tScratch = mesurerUs([&] { rScratch = communeScratch(a, b); });
+
+    if (rSTL.sousChaine.empty()) {
+        std::cout << "\nAucune sous-chaine commune.\n";
+    } else {
+        std::cout << "\nPlus longue sous-chaine commune : \"" << rSTL.sousChaine
+                  << "\" (longueur " << rSTL.sousChaine.size() << ")\n";
+        std::cout << "  Position dans la 1ere chaine : " << rSTL.posA << "\n";
+        std::cout << "  Position dans la 2eme chaine : " << rSTL.posB << "\n";
+    }
+    std::cout << "Les deux versions concordent (meme longueur) : "
+              << (rSTL.sousChaine.size() == rScratch.sousChaine.size() ? "OUI" : "NON") << "\n";
+
+    std::cout << "\n--- Temps d'execution (1 passage) ---\n";
+    std::cout << "  STL     : " << tSTL     << " us\n";
+    std::cout << "  Scratch : " << tScratch << " us\n";
+
+    const int repetitions = 1000;
+    std::cout << "\n--- Benchmark (" << repetitions << " repetitions) ---\n";
+    benchmark("STL    ", [&] { communeSTL(a, b); },     repetitions);
+    benchmark("Scratch", [&] { communeScratch(a, b); }, repetitions);
+}
+
+// ============================================================
 //  OUTIL 2 : remplacer toutes les occurrences
 // ============================================================
 
@@ -285,12 +374,14 @@ int main(int argc, char* argv[]) {
 
     std::cout << "\n1) Plus longue sous-chaine d'un mot presente dans le fichier\n"
               << "2) Rechercher et remplacer toutes les occurrences\n"
+              << "3) Plus longue sous-chaine commune a deux chaines\n"
               << "Choix : ";
     std::string choix;
     std::getline(std::cin, choix);
 
     if (choix == "1")      outilPlusLongue(contenu);
     else if (choix == "2") outilRemplacer(contenu, nomFichier);
+    else if (choix == "3") outilCommune();
     else { std::cerr << "Choix invalide.\n"; return 1; }
 
     return 0;
